@@ -1,0 +1,1615 @@
+/* Arsy Delivery - Glovo-style Landing Page */
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Outfit:wght@400;500;600;700&display=swap');
+
+/* ── Stylized brand name ── */
+.arsy-brand {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
+    text-decoration: none;
+    position: relative;
+    line-height: 1;
+}
+
+.arsy-brand-text {
+    font-family: 'DM Serif Display', Georgia, serif;
+    font-weight: 400;
+    display: flex;
+    align-items: baseline;
+    gap: 0.35em;
+    white-space: nowrap;
+}
+
+.arsy-word-arsy {
+    position: relative;
+}
+
+.arsy-word-delivery {
+    position: relative;
+}
+
+.arsy-pin-letter {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    vertical-align: baseline;
+    color: var(--brand-gold);
+    margin: 0 -0.05em;
+}
+
+.arsy-pin-letter i {
+    font-size: 0.75em;
+    font-family: 'Font Awesome 6 Free';
+    filter: drop-shadow(0 2px 4px rgba(229, 176, 76, 0.4));
+}
+
+.arsy-brand-curve {
+    color: var(--brand-gold);
+    height: auto;
+    pointer-events: none;
+    margin-top: -4px;
+    margin-left: 0.15em;
+    opacity: 0.9;
+}
+
+/* Header variant */
+.arsy-brand--header .arsy-brand-text {
+    font-size: 1.65rem;
+}
+
+.arsy-brand--header .arsy-word-arsy {
+    color: var(--brand-blue);
+}
+
+.arsy-brand--header .arsy-word-delivery {
+    color: var(--brand-blue-dark);
+}
+
+.arsy-brand--header .arsy-brand-curve {
+    width: 72px;
+}
+
+.glovo-logo {
+    text-decoration: none;
+    flex-shrink: 0;
+}
+
+/* Hero variant — mise en valeur */
+.glovo-hero-brand-wrap {
+    margin-bottom: 28px;
+    animation: brandReveal 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes brandReveal {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.arsy-brand--hero {
+    align-items: flex-start;
+}
+
+.arsy-brand--hero .arsy-brand-text {
+    font-size: clamp(2.8rem, 7vw, 4.2rem);
+    letter-spacing: -0.02em;
+}
+
+.arsy-brand--hero .arsy-word-arsy {
+    color: #fff;
+    text-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+}
+
+.arsy-brand--hero .arsy-word-delivery {
+    color: #fff;
+    text-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+}
+
+.arsy-brand--hero .arsy-pin-letter i {
+    font-size: 0.7em;
+}
+
+.arsy-brand--hero .arsy-brand-curve {
+    width: clamp(100px, 22vw, 160px);
+    margin-top: -8px;
+    filter: drop-shadow(0 2px 8px rgba(229, 176, 76, 0.5));
+}
+
+.glovo-hero-slogan {
+    margin-top: 12px;
+    font-size: 0.95rem;
+    color: var(--brand-gold);
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+/* CTA variant */
+.arsy-brand--cta .arsy-brand-text {
+    font-size: 2.4rem;
+}
+
+.arsy-brand--cta .arsy-word-arsy,
+.arsy-brand--cta .arsy-word-delivery {
+    color: #fff;
+}
+
+.arsy-brand--cta .arsy-brand-curve {
+    width: 110px;
+}
+
+/* Footer variant */
+.arsy-brand--footer {
+    margin-bottom: 16px;
+}
+
+.arsy-brand--footer .arsy-brand-text {
+    font-size: 2rem;
+}
+
+.arsy-brand--footer .arsy-word-arsy,
+.arsy-brand--footer .arsy-word-delivery {
+    color: #fff;
+}
+
+.arsy-brand--footer .arsy-brand-curve {
+    width: 90px;
+}
+
+.arsy-brand--footer .arsy-pin-letter {
+    color: var(--brand-gold);
+}
+
+/* ── Page base ── */
+body.glovo-home {
+    background: #F5F6F8;
+    color: #1A1A2E;
+}
+
+body.glovo-home .bg-animated,
+body.glovo-home .particles {
+    display: none;
+}
+
+/* ── Header ── */
+.glovo-header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: #fff;
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.06);
+}
+
+.glovo-header-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.glovo-location {
+    flex: 1;
+    max-width: 320px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    background: #F5F6F8;
+    border: 1.5px solid #E8EAED;
+    border-radius: 50px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.25s;
+    text-align: left;
+}
+
+.glovo-location:hover {
+    border-color: var(--brand-gold);
+    background: #FFF9EE;
+}
+
+.glovo-location > i:first-child {
+    color: var(--brand-blue);
+    font-size: 1.1rem;
+}
+
+.glovo-location-text {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    line-height: 1.3;
+}
+
+.glovo-location-text small {
+    font-size: 0.7rem;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.glovo-location-text strong {
+    font-size: 0.9rem;
+    color: #1A1A2E;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+}
+
+.glovo-location > i:last-child {
+    color: #aaa;
+    font-size: 0.75rem;
+}
+
+.glovo-nav {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-left: auto;
+}
+
+.glovo-nav-link {
+    color: #444;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.95rem;
+    padding: 8px 16px;
+    border-radius: 50px;
+    transition: all 0.25s;
+}
+
+.glovo-nav-link:hover {
+    background: #F5F6F8;
+    color: var(--brand-blue);
+}
+
+.glovo-nav-btn {
+    background: linear-gradient(135deg, var(--brand-gold), var(--brand-gold-light));
+    color: var(--brand-blue-dark);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding: 10px 22px;
+    border-radius: 50px;
+    transition: all 0.25s;
+    box-shadow: 0 4px 14px rgba(229, 176, 76, 0.35);
+}
+
+.glovo-nav-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(229, 176, 76, 0.45);
+}
+
+.glovo-menu-btn {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 1.3rem;
+    color: #333;
+    cursor: pointer;
+    padding: 8px;
+}
+
+/* ── Hero — modern stylised background ── */
+.glovo-hero {
+    position: relative;
+    padding: 56px 24px 100px;
+    overflow: hidden;
+    min-height: 92vh;
+    display: flex;
+    align-items: center;
+    background: #0a1628;
+}
+
+/* Animated mesh background */
+.hero-bg {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.hero-mesh {
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(ellipse 80% 60% at 10% 20%, rgba(43, 90, 140, 0.9) 0%, transparent 55%),
+        radial-gradient(ellipse 60% 50% at 90% 10%, rgba(229, 176, 76, 0.25) 0%, transparent 50%),
+        radial-gradient(ellipse 70% 60% at 70% 90%, rgba(58, 111, 168, 0.5) 0%, transparent 55%),
+        radial-gradient(ellipse 50% 40% at 30% 80%, rgba(229, 176, 76, 0.12) 0%, transparent 50%),
+        linear-gradient(160deg, #0a1628 0%, #1a3a5c 40%, #1e3f66 70%, #0f2840 100%);
+    animation: meshShift 18s ease-in-out infinite alternate;
+}
+
+@keyframes meshShift {
+    0% { filter: hue-rotate(0deg) brightness(1); }
+    100% { filter: hue-rotate(8deg) brightness(1.05); }
+}
+
+.hero-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    animation: orbPulse 10s ease-in-out infinite;
+}
+
+.hero-orb-a {
+    width: 500px;
+    height: 500px;
+    background: rgba(229, 176, 76, 0.18);
+    top: -15%;
+    right: -5%;
+    animation-delay: 0s;
+}
+
+.hero-orb-b {
+    width: 400px;
+    height: 400px;
+    background: rgba(58, 111, 168, 0.35);
+    bottom: -10%;
+    left: -8%;
+    animation-delay: -4s;
+}
+
+.hero-orb-c {
+    width: 250px;
+    height: 250px;
+    background: rgba(229, 176, 76, 0.12);
+    top: 40%;
+    left: 45%;
+    animation-delay: -7s;
+}
+
+@keyframes orbPulse {
+    0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.8; }
+    50% { transform: translate(20px, -25px) scale(1.08); opacity: 1; }
+}
+
+.hero-shine {
+    position: absolute;
+    top: -50%;
+    left: -20%;
+    width: 60%;
+    height: 200%;
+    background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.04) 50%, transparent 60%);
+    animation: shineSweep 8s ease-in-out infinite;
+}
+
+@keyframes shineSweep {
+    0%, 100% { transform: translateX(-20%) rotate(0deg); }
+    50% { transform: translateX(40%) rotate(0deg); }
+}
+
+.hero-grid-pattern {
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse 80% 70% at 50% 50%, black 20%, transparent 80%);
+}
+
+.hero-wave {
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    z-index: 2;
+    line-height: 0;
+}
+
+.hero-wave svg {
+    width: 100%;
+    height: 70px;
+    display: block;
+}
+
+.glovo-hero-layout {
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+}
+
+.glovo-hero-inner {
+    max-width: 560px;
+    text-align: left;
+    position: relative;
+    z-index: 1;
+}
+
+/* Bento image grid */
+.hero-bento {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
+    gap: 14px;
+    height: 440px;
+    perspective: 1000px;
+    transform-style: preserve-3d;
+    transition: transform 0.4s ease;
+}
+
+.bento-card {
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.bento-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s ease;
+}
+
+.bento-card:hover img {
+    transform: scale(1.06);
+}
+
+.bento-main {
+    grid-row: 1 / 3;
+    grid-column: 1;
+    animation: bentoFloat 6s ease-in-out infinite;
+}
+
+.bento-wide {
+    grid-column: 2;
+    height: 200px;
+    animation: bentoFloat 6s ease-in-out infinite -2s;
+}
+
+.bento-square {
+    grid-column: 2;
+    height: 160px;
+    animation: bentoFloat 6s ease-in-out infinite -4s;
+}
+
+.bento-circle {
+    position: absolute;
+    bottom: 20px;
+    right: -10px;
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    border: 3px solid var(--brand-gold);
+    z-index: 3;
+    animation: bentoFloat 5s ease-in-out infinite -1s;
+    box-shadow: 0 0 30px rgba(229, 176, 76, 0.4);
+}
+
+.bento-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 12px 14px;
+    background: linear-gradient(transparent, rgba(0,0,0,0.65));
+}
+
+.bento-overlay span {
+    color: white;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+@keyframes bentoFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+}
+
+.bento-float-badge {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    z-index: 4;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 16px;
+    color: white;
+    animation: badgePulse 3s ease-in-out infinite;
+}
+
+.bento-float-badge > i {
+    width: 36px;
+    height: 36px;
+    background: var(--brand-gold);
+    color: var(--brand-blue-dark);
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+}
+
+.bento-float-badge strong {
+    display: block;
+    font-size: 0.85rem;
+}
+
+.bento-float-badge span {
+    font-size: 0.7rem;
+    opacity: 0.75;
+}
+
+@keyframes badgePulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(229, 176, 76, 0.3); }
+    50% { box-shadow: 0 0 0 8px rgba(229, 176, 76, 0); }
+}
+
+.glovo-hero h1 {
+    font-size: clamp(1.9rem, 4.5vw, 2.8rem);
+    font-weight: 800;
+    color: white;
+    line-height: 1.2;
+    margin-bottom: 12px;
+    letter-spacing: -0.02em;
+}
+
+.glovo-hero h1 span {
+    background: linear-gradient(135deg, var(--brand-gold), var(--brand-gold-light));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.glovo-hero-desc {
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 1.05rem;
+    margin-bottom: 28px;
+    line-height: 1.6;
+}
+
+/* Glass search */
+.glovo-search-divider {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.1);
+    margin: 0 12px;
+}
+
+.glovo-search-glass .glovo-search-box,
+.glovo-search-glass .glovo-address-box {
+    padding: 14px 16px;
+    border-radius: 14px;
+}
+
+.glovo-search-glass .glovo-search-box:focus-within,
+.glovo-search-glass .glovo-address-box:focus-within {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.glovo-search-glass .glovo-search-box i,
+.glovo-search-glass .glovo-address-box i {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.glovo-search-glass .glovo-address-box i {
+    color: var(--brand-gold);
+}
+
+.glovo-search-glass input {
+    color: white !important;
+}
+
+.glovo-search-glass input::placeholder {
+    color: rgba(255, 255, 255, 0.45);
+}
+
+.glovo-search-glass .glovo-search-btn {
+    margin-top: 8px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 22px;
+}
+
+.glovo-search-glass .glovo-search-btn i {
+    width: 32px;
+    height: 32px;
+    background: rgba(30, 63, 102, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+}
+
+/* Hero pills */
+.glovo-hero-pills {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.hero-pill {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 50px;
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.hero-pill i {
+    color: var(--brand-gold);
+    font-size: 0.75rem;
+}
+
+/* Legacy search defaults */
+.glovo-search {
+    background: white;
+    border-radius: 20px;
+    padding: 8px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 24px;
+}
+
+/* Glass overrides for hero */
+.glovo-search.glovo-search-glass {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 24px;
+    padding: 10px;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    gap: 0;
+}
+
+.glovo-search-box,
+.glovo-address-box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    border-radius: 14px;
+    transition: background 0.2s;
+}
+
+.glovo-search-box:focus-within,
+.glovo-address-box:focus-within {
+    background: #F5F6F8;
+}
+
+.glovo-search-box i { color: #aaa; }
+.glovo-address-box i { color: var(--brand-blue); }
+
+.glovo-search-box input,
+.glovo-address-box input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-family: inherit;
+    font-size: 1rem;
+    color: #1A1A2E;
+    background: transparent;
+}
+
+.glovo-search-box input::placeholder,
+.glovo-address-box input::placeholder {
+    color: #aaa;
+}
+
+.glovo-search-btn {
+    background: linear-gradient(135deg, var(--brand-gold), var(--brand-gold-light));
+    color: var(--brand-blue-dark);
+    border: none;
+    border-radius: 14px;
+    padding: 16px 28px;
+    font-family: inherit;
+    font-size: 1.05rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.25s;
+    box-shadow: 0 4px 16px rgba(229, 176, 76, 0.4);
+}
+
+.glovo-search-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(229, 176, 76, 0.5);
+}
+
+.glovo-hero-tags {
+    display: flex;
+    gap: 20px;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+}
+
+/* removed old hero-tags in favor of hero-pills */
+
+.glovo-hero-tags span {
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 0.875rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.glovo-hero-tags i {
+    color: var(--brand-gold);
+}
+
+/* ── Main content ── */
+.glovo-main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+.glovo-section {
+    padding: 40px 0;
+}
+
+.glovo-section-alt {
+    background: white;
+    border-radius: 24px;
+    padding: 40px 32px;
+    margin: 16px 0;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+}
+
+.glovo-section-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+}
+
+.glovo-section-head h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1A1A2E;
+}
+
+.glovo-section-head a {
+    color: var(--brand-blue);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.glovo-section-head-center {
+    flex-direction: column;
+    text-align: center;
+    gap: 8px;
+}
+
+.glovo-section-head-center p {
+    color: #888;
+}
+
+/* Categories scroll */
+.glovo-categories-scroll {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    padding: 8px 4px 16px;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+}
+
+.glovo-categories-scroll::-webkit-scrollbar {
+    display: none;
+}
+
+.glovo-cat-item {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    scroll-snap-align: start;
+    transition: transform 0.25s;
+    width: 90px;
+}
+
+.glovo-cat-item:hover {
+    transform: translateY(-4px);
+}
+
+.glovo-cat-icon {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    transition: box-shadow 0.25s;
+    overflow: hidden;
+}
+
+.glovo-cat-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    transition: transform 0.35s;
+}
+
+.glovo-cat-item:hover .glovo-cat-photo img {
+    transform: scale(1.1);
+}
+
+.glovo-cat-item:hover .glovo-cat-icon {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.glovo-cat-item span {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #444;
+    text-align: center;
+}
+
+/* Promo cards */
+.glovo-promos {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.glovo-promo-card {
+    border-radius: 20px;
+    padding: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    overflow: hidden;
+    position: relative;
+}
+
+.promo-gold {
+    background: linear-gradient(135deg, #FFF3D6, #FFE8A3);
+    border: 1px solid #F0D080;
+}
+
+.promo-blue {
+    background: linear-gradient(135deg, #D6E8FF, #A8CFFF);
+    border: 1px solid #90B8E8;
+}
+
+.glovo-promo-badge {
+    display: inline-block;
+    background: rgba(0, 0, 0, 0.08);
+    color: #555;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 4px 10px;
+    border-radius: 50px;
+    margin-bottom: 8px;
+}
+
+.glovo-promo-text h3 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #1A1A2E;
+    margin-bottom: 4px;
+}
+
+.glovo-promo-text p {
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.glovo-promo-icon {
+    font-size: 3rem;
+    opacity: 0.25;
+    color: #1A1A2E;
+}
+
+/* Store cards - horizontal scroll */
+.glovo-stores-scroll {
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    padding: 4px 4px 16px;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+}
+
+.glovo-stores-scroll::-webkit-scrollbar {
+    display: none;
+}
+
+.glovo-store-card {
+    flex-shrink: 0;
+    width: 220px;
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    text-decoration: none;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    scroll-snap-align: start;
+    transition: all 0.25s;
+    border: 1px solid #EEE;
+}
+
+.glovo-store-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+}
+
+.glovo-store-img {
+    height: 140px;
+    position: relative;
+    overflow: hidden;
+    background: #EEE;
+}
+
+.glovo-store-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+
+.glovo-store-card:hover .glovo-store-img img {
+    transform: scale(1.08);
+}
+
+.glovo-store-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: var(--brand-gold);
+    color: var(--brand-blue-dark);
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 6px;
+    text-transform: uppercase;
+}
+
+.glovo-store-info {
+    padding: 14px;
+}
+
+.glovo-store-info h3 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #1A1A2E;
+    margin-bottom: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.glovo-store-meta {
+    font-size: 0.8rem;
+    color: #888;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 4px;
+}
+
+.glovo-rating {
+    color: var(--brand-gold);
+    font-weight: 600;
+}
+
+.glovo-rating i {
+    font-size: 0.7rem;
+}
+
+.glovo-store-cat {
+    font-size: 0.75rem;
+    color: #aaa;
+    margin-bottom: 6px;
+}
+
+.glovo-store-price {
+    font-size: 0.8rem;
+    color: #666;
+}
+
+.glovo-store-price strong {
+    color: var(--brand-blue);
+    font-size: 0.95rem;
+}
+
+/* Product grid */
+.glovo-products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 20px;
+}
+
+.glovo-product-card {
+    background: #F9FAFB;
+    border-radius: 16px;
+    overflow: hidden;
+    text-decoration: none;
+    border: 1px solid #EEE;
+    transition: all 0.25s;
+}
+
+.glovo-product-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    border-color: var(--brand-gold);
+}
+
+.glovo-product-img {
+    height: 160px;
+    overflow: hidden;
+    background: #EEE;
+    position: relative;
+}
+
+.glovo-product-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+
+.glovo-product-card:hover .glovo-product-img img {
+    transform: scale(1.06);
+}
+
+.glovo-product-body {
+    padding: 16px;
+}
+
+.glovo-product-cat {
+    font-size: 0.75rem;
+    color: var(--brand-blue);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.glovo-product-body h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1A1A2E;
+    margin: 4px 0 6px;
+}
+
+.glovo-product-body p {
+    font-size: 0.85rem;
+    color: #888;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-bottom: 12px;
+}
+
+.glovo-product-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.glovo-product-foot strong {
+    font-size: 1.1rem;
+    color: var(--brand-blue);
+}
+
+.glovo-add-btn {
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, var(--brand-gold), var(--brand-gold-light));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--brand-blue-dark);
+    font-size: 0.9rem;
+    box-shadow: 0 4px 12px rgba(229, 176, 76, 0.35);
+}
+
+.glovo-section-cta {
+    text-align: center;
+    margin-top: 32px;
+}
+
+.glovo-cta-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, var(--brand-gold), var(--brand-gold-light));
+    color: var(--brand-blue-dark);
+    text-decoration: none;
+    font-weight: 700;
+    padding: 14px 32px;
+    border-radius: 50px;
+    border: none;
+    font-family: inherit;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.25s;
+    box-shadow: 0 4px 16px rgba(229, 176, 76, 0.35);
+}
+
+.glovo-cta-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(229, 176, 76, 0.45);
+}
+
+/* Steps */
+.glovo-steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+}
+
+.glovo-step {
+    background: white;
+    border-radius: 20px;
+    padding: 32px 24px;
+    text-align: center;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+    border: 1px solid #EEE;
+    position: relative;
+    transition: all 0.25s;
+}
+
+.glovo-step:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+    border-color: var(--brand-gold);
+}
+
+.glovo-step-num {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 28px;
+    height: 28px;
+    background: var(--brand-gold);
+    color: var(--brand-blue-dark);
+    border-radius: 50%;
+    font-size: 0.8rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.glovo-step-icon {
+    width: 64px;
+    height: 64px;
+    background: linear-gradient(135deg, rgba(43, 90, 140, 0.1), rgba(229, 176, 76, 0.1));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: var(--brand-blue);
+    margin: 0 auto 16px;
+}
+
+.glovo-step h3 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: #1A1A2E;
+}
+
+.glovo-step p {
+    font-size: 0.875rem;
+    color: #888;
+}
+
+/* App CTA */
+.glovo-app-cta {
+    background: linear-gradient(135deg, var(--brand-blue-dark), var(--brand-blue));
+    border-radius: 24px;
+    padding: 48px;
+    margin: 40px 0 60px;
+    position: relative;
+    overflow: hidden;
+}
+
+.glovo-app-cta::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 90% 50%, rgba(229, 176, 76, 0.2) 0%, transparent 60%);
+}
+
+.glovo-app-cta-inner {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    position: relative;
+    flex-wrap: wrap;
+}
+
+.glovo-app-cta-inner > .arsy-brand {
+    flex-shrink: 0;
+}
+
+.glovo-app-cta-inner > div {
+    flex: 1;
+}
+
+.glovo-app-cta h2 {
+    color: white;
+    font-size: 1.75rem;
+    margin-bottom: 8px;
+}
+
+.glovo-app-cta p {
+    color: rgba(255, 255, 255, 0.75);
+}
+
+/* Footer */
+.glovo-footer {
+    background: #1A1A2E;
+    color: white;
+    padding: 48px 24px 24px;
+}
+
+.glovo-footer-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 40px;
+    margin-bottom: 40px;
+}
+
+.glovo-footer-brand .arsy-brand {
+    display: inline-flex;
+}
+
+.glovo-footer-brand p {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.9rem;
+    max-width: 280px;
+}
+
+.glovo-footer-links h4 {
+    font-size: 0.9rem;
+    margin-bottom: 16px;
+    color: var(--brand-gold);
+}
+
+.glovo-footer-links a {
+    display: block;
+    color: rgba(255, 255, 255, 0.6);
+    text-decoration: none;
+    font-size: 0.875rem;
+    margin-bottom: 10px;
+    transition: color 0.2s;
+}
+
+.glovo-footer-links a:hover {
+    color: white;
+}
+
+.glovo-footer-bottom {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-top: 24px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    text-align: center;
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 0.85rem;
+}
+
+/* Location modal */
+.glovo-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s;
+}
+
+.glovo-modal.open {
+    opacity: 1;
+    visibility: visible;
+}
+
+.glovo-modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+}
+
+.glovo-modal-box {
+    background: white;
+    border-radius: 24px;
+    padding: 32px;
+    width: 90%;
+    max-width: 440px;
+    position: relative;
+    z-index: 1;
+    transform: scale(0.95);
+    transition: transform 0.3s;
+}
+
+.glovo-modal.open .glovo-modal-box {
+    transform: scale(1);
+}
+
+.glovo-modal-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: #F5F6F8;
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    color: #666;
+    font-size: 1rem;
+}
+
+.glovo-modal-box h3 {
+    font-size: 1.25rem;
+    margin-bottom: 8px;
+    color: #1A1A2E;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.glovo-modal-box h3 i {
+    color: var(--brand-blue);
+}
+
+.glovo-modal-box > p {
+    color: #888;
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+}
+
+.glovo-modal-input {
+    width: 100%;
+    padding: 14px 18px;
+    border: 1.5px solid #E8EAED;
+    border-radius: 14px;
+    font-family: inherit;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.glovo-modal-input:focus {
+    border-color: var(--brand-gold);
+}
+
+.glovo-locate-btn {
+    width: 100%;
+    margin-top: 12px;
+    padding: 12px;
+    background: none;
+    border: 1.5px solid #E8EAED;
+    border-radius: 14px;
+    font-family: inherit;
+    font-size: 0.9rem;
+    color: var(--brand-blue);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s;
+}
+
+.glovo-locate-btn:hover {
+    border-color: var(--brand-blue);
+    background: rgba(43, 90, 140, 0.05);
+}
+
+.glovo-locate-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.location-msg {
+    margin-top: 12px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.location-msg--error {
+    background: #FEF2F2;
+    border: 1px solid #FECACA;
+    color: #B91C1C;
+}
+
+.location-msg--info {
+    background: #EFF6FF;
+    border: 1px solid #BFDBFE;
+    color: #1D4ED8;
+}
+
+.location-msg--success {
+    background: #F0FDF4;
+    border: 1px solid #BBF7D0;
+    color: #15803D;
+}
+
+/* Fade in on glovo home */
+body.glovo-home .fade-in {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+body.glovo-home .fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ── Responsive ── */
+@media (max-width: 992px) {
+    .glovo-hero {
+        min-height: auto;
+        padding: 40px 20px 90px;
+    }
+
+    .glovo-hero-layout {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+
+    .glovo-hero-inner {
+        max-width: 100%;
+        text-align: center;
+        margin: 0 auto;
+    }
+
+    .glovo-hero-pills {
+        justify-content: center;
+    }
+
+    .glovo-hero-brand-wrap {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .arsy-brand--hero {
+        align-items: center;
+    }
+
+    .arsy-brand--hero .arsy-brand-curve {
+        margin-left: 0;
+    }
+
+    .hero-bento {
+        height: 320px;
+        max-width: 400px;
+        margin: 0 auto;
+        order: -1;
+    }
+
+    .bento-wide { height: 140px; }
+    .bento-square { height: 120px; }
+    .bento-circle { width: 80px; height: 80px; bottom: 10px; right: 0; }
+
+    .glovo-location {
+        display: none;
+    }
+
+    .glovo-nav {
+        display: none;
+    }
+
+    .glovo-menu-btn {
+        display: block;
+        margin-left: auto;
+    }
+
+    .glovo-promos {
+        grid-template-columns: 1fr;
+    }
+
+    .glovo-steps {
+        grid-template-columns: 1fr;
+    }
+
+    .glovo-footer-inner {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .glovo-app-cta-inner {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+
+@media (max-width: 600px) {
+    .glovo-hero {
+        padding: 40px 16px 48px;
+    }
+
+    .glovo-main {
+        padding: 0 16px;
+    }
+
+    .glovo-section-alt {
+        padding: 24px 16px;
+    }
+
+    .glovo-footer-inner {
+        grid-template-columns: 1fr;
+    }
+
+    .glovo-app-cta {
+        padding: 32px 24px;
+    }
+}
+
+/* Mobile nav open */
+.glovo-nav.open {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    padding: 16px 24px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    border-top: 1px solid #EEE;
+}
+
+.glovo-header {
+    position: sticky;
+}
+
+.glovo-header-inner {
+    position: relative;
+}
