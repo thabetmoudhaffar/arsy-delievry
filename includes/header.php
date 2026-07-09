@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 $basePath = BASE_PATH;
 $pageTitle = $pageTitle ?? 'Arsy Delivery';
 ?>

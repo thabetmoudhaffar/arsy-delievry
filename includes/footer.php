@@ -1,4 +1,4 @@
-﻿    <?php if (!empty($extraJS)): ?><?= $extraJS ?><?php endif; ?>
+    <?php if (!empty($extraJS)): ?><?= $extraJS ?><?php endif; ?>
     <script src="<?= $basePath ?? BASE_PATH ?>/public/assets/js/main.js"></script>
 </body>
 </html>
