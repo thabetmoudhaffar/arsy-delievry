@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 $basePath = BASE_PATH;
 $pageTitle = $pageTitle ?? 'Arsy Delivery';
 ?>
@@ -8,7 +8,7 @@ $pageTitle = $pageTitle ?? 'Arsy Delivery';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= sanitize($pageTitle) ?> - Arsy Delivery</title>
-    <link rel="stylesheet" href="<?= $basePath ?>/assets/css/style.css">
+    <link rel="stylesheet" href="<?= $basePath ?>/public/assets/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <?php if (!empty($extraCSS)): ?><?= $extraCSS ?><?php endif; ?>
     <script>window.BASE_PATH = '<?= BASE_PATH ?>';</script>

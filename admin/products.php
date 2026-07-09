@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 require_once __DIR__ . '/../includes/functions.php';
 requireRole('admin');
 
@@ -59,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->execute([$productId]);
             $img = $stmt->fetchColumn();
             if ($img && $img !== 'default-food.jpg') {
-                $path = __DIR__ . '/../assets/images/products/' . $img;
+                $path = __DIR__ . '/../public/assets/images/products/' . $img;
                 if (file_exists($path)) unlink($path);
             }
             $stmt = $db->prepare('DELETE FROM products WHERE id = ?');

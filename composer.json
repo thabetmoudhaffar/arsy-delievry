@@ -1,0 +1,8 @@
+{
+  "name": "arsy/delivery",
+  "description": "Arsy Delivery App",
+  "type": "project",
+  "require": {
+    "php": "^8.2"
+  }
+}

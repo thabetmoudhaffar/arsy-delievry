@@ -43,8 +43,12 @@ define('DB_PASS', getenv('DB_PASS') !== false ? getenv('DB_PASS') : '');
 define('DB_CHARSET', getenv('DB_CHARSET') ?: 'utf8mb4');
 
 // ─── Deployment Paths Configuration ───
-define('BASE_PATH', getenv('BASE_PATH') !== false ? getenv('BASE_PATH') : '/arsy%20delievry');
-define('APP_URL', getenv('APP_URL') ?: 'http://localhost/arsy%20delievry');
+$isVercel = getenv('VERCEL') === '1' || getenv('NOW_REGION') !== false;
+$defaultBasePath = $isVercel ? '' : '/arsy%20delievry';
+$defaultAppUrl = $isVercel ? 'https://' . getenv('VERCEL_URL') : 'http://localhost/arsy%20delievry';
+
+define('BASE_PATH', getenv('BASE_PATH') !== false ? getenv('BASE_PATH') : $defaultBasePath);
+define('APP_URL', getenv('APP_URL') ?: $defaultAppUrl);
 
 function getDB(): PDO {
     static $pdo = null;

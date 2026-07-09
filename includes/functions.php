@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 session_start();
 require_once __DIR__ . '/../config/database.php';
 
@@ -66,9 +66,9 @@ function getOrderStatusClass(string $status): string {
 function getProductImageUrl(array $product, string $basePath = BASE_PATH): string {
     $localFile = $product['image'] ?? '';
     if ($localFile && $localFile !== 'default-food.jpg') {
-        $path = __DIR__ . '/../assets/images/products/' . $localFile;
+        $path = __DIR__ . '/../public/assets/images/products/' . $localFile;
         if (file_exists($path)) {
-            return $basePath . '/assets/images/products/' . rawurlencode($localFile);
+            return $basePath . '/public/assets/images/products/' . rawurlencode($localFile);
         }
     }
 
@@ -279,7 +279,7 @@ function uploadProductImage(array $file): ?string {
         default => 'jpg',
     };
 
-    $dir = __DIR__ . '/../assets/images/products';
+    $dir = __DIR__ . '/../public/assets/images/products';
     if (!is_dir($dir)) {
         mkdir($dir, 0755, true);
     }

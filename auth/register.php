@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 require_once __DIR__ . '/../includes/functions.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -42,8 +42,8 @@ if (isLoggedIn()) {
 $pageTitle = 'Inscription';
 $basePath = BASE_PATH;
 $bodyClass = 'auth-body';
-$extraCSS = '<link rel="stylesheet" href="' . $basePath . '/assets/css/auth.css">';
-$extraJS = '<script src="' . $basePath . '/assets/js/auth.js"></script>';
+$extraCSS = '<link rel="stylesheet" href="' . $basePath . '/public/assets/css/auth.css">';
+$extraJS = '<script src="' . $basePath . '/public/assets/js/auth.js"></script>';
 require_once __DIR__ . '/../includes/header.php';
 ?>
 

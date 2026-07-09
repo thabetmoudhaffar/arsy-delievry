@@ -1,0 +1,8 @@
+[build]
+  command = "echo 'Netlify ne supporte pas PHP nativement. Ce site doit être hébergé sur Vercel, Hostinger, Render ou un VPS.' && exit 1"
+  publish = "public"
+
+[redirects]
+  from = "/*"
+  to = "/index.php"
+  status = 200

@@ -1,10 +1,10 @@
-<?php
+﻿<?php
 require_once __DIR__ . '/includes/functions.php';
 $pageTitle = 'Accueil';
 $basePath = BASE_PATH;
 $bodyClass = 'glovo-home';
-$extraCSS = '<link rel="stylesheet" href="' . $basePath . '/assets/css/home.css">';
-$extraJS = '<script src="' . $basePath . '/assets/js/home.js"></script>';
+$extraCSS = '<link rel="stylesheet" href="' . $basePath . '/public/assets/css/home.css">';
+$extraJS = '<script src="' . $basePath . '/public/assets/js/home.js"></script>';
 require_once __DIR__ . '/includes/header.php';
 
 $db = getDB();

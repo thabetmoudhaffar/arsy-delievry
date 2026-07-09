@@ -1,0 +1,21 @@
+{
+  "functions": {
+    "**/*.php": {
+      "runtime": "vercel-php@0.6.1"
+    }
+  },
+  "routes": [
+    {
+      "src": "/assets/(.*)",
+      "dest": "/public/assets/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/$1"
+    }
+  ],
+  "env": {
+    "APP_ENV": "production",
+    "BASE_PATH": ""
+  }
+}
