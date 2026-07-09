@@ -42,12 +42,59 @@ if (isset($_GET['debug_ssl']) && $_GET['debug_ssl'] === 'env2026') {
 if (isset($_GET['debug_db']) && $_GET['debug_db'] === 'env2026') {
     require_once __DIR__ . '/config/database.php';
     header('Content-Type: application/json');
-    try {
-        $pdo = getDB();
-        echo json_encode(['status' => 'ok', 'dsn' => 'mysql:host=' . DB_HOST . ';port=' . DB_PORT . ';dbname=' . DB_NAME], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
-    } catch (Throwable $exception) {
-        echo json_encode(['status' => 'error', 'message' => $exception->getMessage(), 'file' => $exception->getFile(), 'line' => $exception->getLine()], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+
+    $sslCaPath = resolveDbSslCaPath(DB_SSL_CA);
+    $dsn = sprintf(
+        'mysql:host=%s;port=%s;dbname=%s;charset=%s',
+        DB_HOST,
+        DB_PORT,
+        DB_NAME,
+        DB_CHARSET
+    );
+
+    $baseOptions = [
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+        PDO::ATTR_EMULATE_PREPARES => false,
+    ];
+
+    $attemptOptions = [];
+    if (DB_SSL_MODE !== '' && DB_SSL_MODE !== 'disable') {
+        $opt = $baseOptions;
+        if (defined('PDO::MYSQL_ATTR_SSL_CA') && $sslCaPath !== '' && file_exists($sslCaPath)) {
+            $opt[PDO::MYSQL_ATTR_SSL_CA] = $sslCaPath;
+        }
+        if (defined('PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT')) {
+            $opt[PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT] = DB_SSL_VERIFY_SERVER_CERT;
+        } else {
+            $opt[PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT] = false;
+        }
+        $attemptOptions[] = $opt;
+
+        $fallback = $opt;
+        if (defined('PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT')) {
+            $fallback[PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT] = false;
+        }
+        if (isset($fallback[PDO::MYSQL_ATTR_SSL_CA])) {
+            unset($fallback[PDO::MYSQL_ATTR_SSL_CA]);
+        }
+        $attemptOptions[] = $fallback;
+    } else {
+        $attemptOptions[] = $baseOptions;
     }
+
+    $results = [];
+    foreach ($attemptOptions as $i => $opt) {
+        try {
+            $pdo = new PDO($dsn, DB_USER, DB_PASS, $opt);
+            $results[] = ['attempt' => $i, 'ok' => true, 'option_keys' => array_keys($opt)];
+            break;
+        } catch (PDOException $e) {
+            $results[] = ['attempt' => $i, 'ok' => false, 'message' => $e->getMessage(), 'code' => $e->getCode(), 'option_keys' => array_keys($opt)];
+        }
+    }
+
+    echo json_encode(['dsn' => $dsn, 'resolved_ca' => $sslCaPath, 'attempts' => $results], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
     exit;
 }
 if (isset($_GET['debug_tcp']) && $_GET['debug_tcp'] === 'env2026') {
