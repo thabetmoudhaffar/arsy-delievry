@@ -145,25 +145,25 @@ function getDB(): PDO
         DB_CHARSET
     );
 
-    if (DB_SSL_MODE !== '' && DB_SSL_MODE !== 'disable') {
-        $dsn .= ';sslmode=' . DB_SSL_MODE;
-        if ($sslCaPath !== '' && file_exists($sslCaPath)) {
-            $dsn .= ';sslrootcert=' . $sslCaPath;
-        }
-    }
-
     $options = [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
         PDO::ATTR_EMULATE_PREPARES => false,
     ];
 
-    if (defined('PDO::MYSQL_ATTR_SSL_CA') && $sslCaPath !== '' && file_exists($sslCaPath)) {
-        $options[PDO::MYSQL_ATTR_SSL_CA] = $sslCaPath;
-    }
-
-    if (defined('PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT')) {
-        $options[PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT] = DB_SSL_VERIFY_SERVER_CERT;
+    if (DB_SSL_MODE !== '' && DB_SSL_MODE !== 'disable') {
+        // Pour PDO MySQL, on utilise les attributs MYSQL_ATTR_SSL_* plutôt que le DSN
+        if (defined('PDO::MYSQL_ATTR_SSL_CA') && $sslCaPath !== '' && file_exists($sslCaPath)) {
+            $options[PDO::MYSQL_ATTR_SSL_CA] = $sslCaPath;
+        }
+        
+        // Aiven nécessite souvent SSL, mais si on n'a pas le CA, on peut désactiver la vérification stricte
+        if (defined('PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT')) {
+            $options[PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT] = DB_SSL_VERIFY_SERVER_CERT;
+        } else {
+            // Par défaut pour Aiven si non défini
+            $options[PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT] = false;
+        }
     }
 
     try {
