@@ -1,31 +1,84 @@
 <?php
-// Load environment variables from .env file if it exists
-if (file_exists(__DIR__ . '/../.env')) {
-    $lines = file(__DIR__ . '/../.env', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+function loadEnvFile(string $filePath): void
+{
+    if (!file_exists($filePath)) {
+        return;
+    }
+
+    $lines = file($filePath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
     foreach ($lines as $line) {
         $line = trim($line);
-        if (empty($line) || strpos($line, '#') === 0) continue;
-        
+        if ($line === '' || str_starts_with($line, '#')) {
+            continue;
+        }
+
         $parts = explode('=', $line, 2);
-        if (count($parts) === 2) {
-            $key = trim($parts[0]);
-            $val = trim($parts[1]);
-            
-            // Remove surrounding quotes from the value
-            if (preg_match('/^"([^"]*)"$/', $val, $matches) || preg_match("/^'([^']*)'$/", $val, $matches)) {
-                $val = $matches[1];
-            }
-            
-            if (!array_key_exists($key, $_SERVER) && !array_key_exists($key, $_ENV)) {
-                putenv(sprintf('%s=%s', $key, $val));
-                $_ENV[$key] = $val;
-                $_SERVER[$key] = $val;
-            }
+        if (count($parts) !== 2) {
+            continue;
+        }
+
+        $key = trim($parts[0]);
+        $value = trim($parts[1]);
+
+        if (
+            (preg_match('/^"([^"]*)"$/', $value, $matches) || preg_match("/^'([^']*)'$/", $value, $matches))
+            && isset($matches[1])
+        ) {
+            $value = $matches[1];
+        }
+
+        if (!array_key_exists($key, $_SERVER) && !array_key_exists($key, $_ENV)) {
+            putenv(sprintf('%s=%s', $key, $value));
+            $_ENV[$key] = $value;
+            $_SERVER[$key] = $value;
         }
     }
 }
 
-define('APP_ENV', getenv('APP_ENV') ?: 'local');
+function envValue(string $key, ?string $default = null): ?string
+{
+    $value = getenv($key);
+    if ($value === false || $value === '') {
+        return $default;
+    }
+
+    return $value;
+}
+
+function envFlag(string $key, bool $default = false): bool
+{
+    $value = envValue($key);
+    if ($value === null) {
+        return $default;
+    }
+
+    return filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? $default;
+}
+
+loadEnvFile(__DIR__ . '/../.env');
+
+$isVercel = envValue('VERCEL') === '1' || getenv('NOW_REGION') !== false;
+$databaseUrl = envValue('DATABASE_URL')
+    ?? envValue('DB_URL')
+    ?? envValue('MYSQL_URL')
+    ?? envValue('MYSQL_URI')
+    ?? envValue('AIVEN_MYSQL_URI');
+$parsedDatabaseUrl = $databaseUrl ? parse_url($databaseUrl) : null;
+
+$databaseQuery = [];
+if (is_array($parsedDatabaseUrl) && !empty($parsedDatabaseUrl['query'])) {
+    parse_str($parsedDatabaseUrl['query'], $databaseQuery);
+}
+
+$databaseNameFromUrl = null;
+if (is_array($parsedDatabaseUrl) && !empty($parsedDatabaseUrl['path'])) {
+    $databaseNameFromUrl = ltrim($parsedDatabaseUrl['path'], '/');
+    if ($databaseNameFromUrl === '') {
+        $databaseNameFromUrl = null;
+    }
+}
+
+define('APP_ENV', envValue('APP_ENV', 'local'));
 
 if (APP_ENV === 'production') {
     ini_set('display_errors', '0');
@@ -36,29 +89,70 @@ if (APP_ENV === 'production') {
     error_reporting(E_ALL);
 }
 
-define('DB_HOST', getenv('DB_HOST') ?: 'localhost');
-define('DB_NAME', getenv('DB_NAME') ?: 'arsy_delivery');
-define('DB_USER', getenv('DB_USER') ?: 'root');
-define('DB_PASS', getenv('DB_PASS') !== false ? getenv('DB_PASS') : '');
-define('DB_CHARSET', getenv('DB_CHARSET') ?: 'utf8mb4');
+define('DB_HOST', is_array($parsedDatabaseUrl) && !empty($parsedDatabaseUrl['host']) ? $parsedDatabaseUrl['host'] : envValue('DB_HOST', 'localhost'));
+define('DB_PORT', (string) (is_array($parsedDatabaseUrl) && !empty($parsedDatabaseUrl['port']) ? $parsedDatabaseUrl['port'] : envValue('DB_PORT', '3306')));
+define('DB_NAME', $databaseNameFromUrl ?: envValue('DB_NAME', 'arsy_delivery'));
+define('DB_USER', is_array($parsedDatabaseUrl) && array_key_exists('user', $parsedDatabaseUrl) ? $parsedDatabaseUrl['user'] : envValue('DB_USER', 'root'));
+define('DB_PASS', is_array($parsedDatabaseUrl) && array_key_exists('pass', $parsedDatabaseUrl) ? $parsedDatabaseUrl['pass'] : (getenv('DB_PASS') !== false ? getenv('DB_PASS') : ''));
+define('DB_CHARSET', $databaseQuery['charset'] ?? envValue('DB_CHARSET', 'utf8mb4'));
+define('DB_SSL_MODE', strtolower($databaseQuery['sslmode'] ?? envValue('DB_SSL_MODE', $isVercel ? 'require' : 'prefer')));
+define('DB_SSL_CA', envValue('DB_SSL_CA', ''));
+define('DB_SSL_VERIFY_SERVER_CERT', envFlag('DB_SSL_VERIFY_SERVER_CERT', false));
 
-// ─── Deployment Paths Configuration ───
-$isVercel = getenv('VERCEL') === '1' || getenv('NOW_REGION') !== false;
 $defaultBasePath = $isVercel ? '' : '/arsy%20delievry';
-$defaultAppUrl = $isVercel ? 'https://' . getenv('VERCEL_URL') : 'http://localhost/arsy%20delievry';
+$defaultAppUrl = $isVercel ? 'https://' . envValue('VERCEL_URL', '') : 'http://localhost/arsy%20delievry';
 
 define('BASE_PATH', getenv('BASE_PATH') !== false ? getenv('BASE_PATH') : $defaultBasePath);
-define('APP_URL', getenv('APP_URL') ?: $defaultAppUrl);
+define('APP_URL', envValue('APP_URL', $defaultAppUrl));
 
-function getDB(): PDO {
+function getDB(): PDO
+{
     static $pdo = null;
-    if ($pdo === null) {
-        $dsn = 'mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=' . DB_CHARSET;
-        $pdo = new PDO($dsn, DB_USER, DB_PASS, [
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-            PDO::ATTR_EMULATE_PREPARES => false,
-        ]);
+    if ($pdo !== null) {
+        return $pdo;
     }
+
+    $dsn = sprintf(
+        'mysql:host=%s;port=%s;dbname=%s;charset=%s',
+        DB_HOST,
+        DB_PORT,
+        DB_NAME,
+        DB_CHARSET
+    );
+
+    if (DB_SSL_MODE !== '' && DB_SSL_MODE !== 'disable') {
+        $dsn .= ';sslmode=' . DB_SSL_MODE;
+        if (DB_SSL_CA !== '') {
+            $dsn .= ';sslrootcert=' . DB_SSL_CA;
+        }
+    }
+
+    $options = [
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+        PDO::ATTR_EMULATE_PREPARES => false,
+    ];
+
+    if (defined('PDO::MYSQL_ATTR_SSL_CA') && DB_SSL_CA !== '') {
+        $options[PDO::MYSQL_ATTR_SSL_CA] = DB_SSL_CA;
+    }
+
+    if (defined('PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT')) {
+        $options[PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT] = DB_SSL_VERIFY_SERVER_CERT;
+    }
+
+    try {
+        $pdo = new PDO($dsn, DB_USER, DB_PASS, $options);
+    } catch (PDOException $exception) {
+        error_log(sprintf(
+            'Database connection failed [%s:%s/%s]: %s',
+            DB_HOST,
+            DB_PORT,
+            DB_NAME,
+            $exception->getMessage()
+        ));
+        throw $exception;
+    }
+
     return $pdo;
 }

@@ -3,15 +3,26 @@ require_once __DIR__ . '/includes/functions.php';
 $pageTitle = 'Accueil';
 $basePath = BASE_PATH;
 $bodyClass = 'glovo-home';
-$extraCSS = '<link rel="stylesheet" href="' . $basePath . '/public/assets/css/home.css">';
-$extraJS = '<script src="' . $basePath . '/public/assets/js/home.js"></script>';
-require_once __DIR__ . '/includes/header.php';
+$extraCSS = '<link rel="stylesheet" href="' . assetUrl('css/home.css') . '">';
+$extraJS = '<script src="' . assetUrl('js/home.js') . '"></script>';
 
-$db = getDB();
-$categories = $db->query('SELECT * FROM categories')->fetchAll();
-$products = $db->query('SELECT p.*, c.name as category_name FROM products p JOIN categories c ON p.category_id = c.id WHERE p.available = 1 LIMIT 12')->fetchAll();
-$user = currentUser();
+$categories = [];
+$products = [];
+$user = null;
+$homepageError = null;
+
+try {
+    $db = getDB();
+    $categories = $db->query('SELECT * FROM categories')->fetchAll();
+    $products = $db->query('SELECT p.*, c.name as category_name FROM products p JOIN categories c ON p.category_id = c.id WHERE p.available = 1 LIMIT 12')->fetchAll();
+    $user = currentUser();
+} catch (Throwable $exception) {
+    error_log('Homepage bootstrap failed: ' . $exception->getMessage());
+    $homepageError = "La connexion a la base de donnees n'est pas encore disponible sur le serveur.";
+}
+
 $orderLink = $user ? 'client/order.php' : 'auth/register.php';
+require_once __DIR__ . '/includes/header.php';
 
 $categoryColors = [
     'Food' => ['#FF6B6B', 'fa-utensils'],
@@ -51,6 +62,14 @@ $categoryColors = [
         <button class="glovo-menu-btn" id="glovo-menu-btn"><i class="fas fa-bars"></i></button>
     </div>
 </header>
+
+<?php if ($homepageError !== null): ?>
+<section style="padding: 16px 20px 0; background: transparent;">
+    <div style="max-width: 1200px; margin: 0 auto; background: #fff3cd; color: #664d03; border: 1px solid #ffecb5; border-radius: 14px; padding: 14px 16px;">
+        <?= sanitize($homepageError) ?> Verifie `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER` et `DB_PASS` dans Vercel.
+    </div>
+</section>
+<?php endif; ?>
 
 <section class="glovo-hero">
     <div class="hero-bg" aria-hidden="true">

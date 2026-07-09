@@ -8,10 +8,16 @@ function isLoggedIn(): bool {
 
 function currentUser(): ?array {
     if (!isLoggedIn()) return null;
-    $db = getDB();
-    $stmt = $db->prepare('SELECT id, name, email, phone, address, role FROM users WHERE id = ?');
-    $stmt->execute([$_SESSION['user_id']]);
-    return $stmt->fetch() ?: null;
+
+    try {
+        $db = getDB();
+        $stmt = $db->prepare('SELECT id, name, email, phone, address, role FROM users WHERE id = ?');
+        $stmt->execute([$_SESSION['user_id']]);
+        return $stmt->fetch() ?: null;
+    } catch (Throwable $exception) {
+        error_log('Unable to load current user: ' . $exception->getMessage());
+        return null;
+    }
 }
 
 function requireRole(string ...$roles): void {
@@ -35,6 +41,10 @@ function jsonResponse(array $data, int $code = 200): void {
 
 function sanitize(string $str): string {
     return htmlspecialchars(trim($str), ENT_QUOTES, 'UTF-8');
+}
+
+function assetUrl(string $path): string {
+    return BASE_PATH . '/assets/' . ltrim($path, '/');
 }
 
 function getOrderStatusLabel(string $status): string {
@@ -68,7 +78,7 @@ function getProductImageUrl(array $product, string $basePath = BASE_PATH): strin
     if ($localFile && $localFile !== 'default-food.jpg') {
         $path = __DIR__ . '/../public/assets/images/products/' . $localFile;
         if (file_exists($path)) {
-            return $basePath . '/public/assets/images/products/' . rawurlencode($localFile);
+            return assetUrl('images/products/' . rawurlencode($localFile));
         }
     }
 
