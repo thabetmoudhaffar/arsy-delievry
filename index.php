@@ -97,6 +97,30 @@ if (isset($_GET['debug_db']) && $_GET['debug_db'] === 'env2026') {
     echo json_encode(['dsn' => $dsn, 'resolved_ca' => $sslCaPath, 'attempts' => $results], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
     exit;
 }
+if (isset($_GET['debug_tls']) && $_GET['debug_tls'] === 'env2026') {
+    header('Content-Type: application/json');
+    $host = DB_HOST;
+    $port = (int) DB_PORT;
+    $result = ['host' => $host, 'port' => $port];
+    $start = microtime(true);
+    $errno = 0; $errstr = '';
+    $socket = @stream_socket_client(sprintf('tcp://%s:%d', $host, $port), $errno, $errstr, 10);
+    $result['tcp_connect'] = $socket ? 'ok' : 'failed';
+    $result['tcp_err'] = $errstr;
+    $result['tcp_errno'] = $errno;
+    $result['duration_ms'] = round((microtime(true) - $start) * 1000, 2);
+    if ($socket) {
+        // Try enabling TLS
+        $crypto = @stream_socket_enable_crypto($socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT | STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT | STREAM_CRYPTO_METHOD_TLSv1_3_CLIENT);
+        $result['enable_crypto'] = $crypto === true ? 'ok' : 'failed';
+        $opensslErr = !empty(openssl_error_string()) ? openssl_error_string() : null;
+        $result['openssl_error'] = $opensslErr;
+        fclose($socket);
+    }
+    echo json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+    exit;
+}
+
 if (isset($_GET['debug_tcp']) && $_GET['debug_tcp'] === 'env2026') {
     header('Content-Type: application/json');
     $host = 'mysql-1d5749f-mouthaffar4242-e2a3.e.aivencloud.com';
