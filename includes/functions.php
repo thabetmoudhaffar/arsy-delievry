@@ -1,6 +1,14 @@
 <?php
-session_start();
 require_once __DIR__ . '/../config/database.php';
+
+$sessionSavePath = envValue('SESSION_SAVE_PATH', sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'php-sessions');
+if (!is_dir($sessionSavePath)) {
+    @mkdir($sessionSavePath, 0777, true);
+}
+if (is_dir($sessionSavePath)) {
+    session_save_path($sessionSavePath);
+}
+session_start();
 
 function isLoggedIn(): bool {
     return isset($_SESSION['user_id']);

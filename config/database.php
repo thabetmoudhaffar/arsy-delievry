@@ -70,12 +70,15 @@ if (is_array($parsedDatabaseUrl) && !empty($parsedDatabaseUrl['query'])) {
     parse_str($parsedDatabaseUrl['query'], $databaseQuery);
 }
 
-$databaseNameFromUrl = null;
+$databaseNameFromUrl = $databaseQuery['dbname'] ?? $databaseQuery['database'] ?? null;
 if (is_array($parsedDatabaseUrl) && !empty($parsedDatabaseUrl['path'])) {
-    $databaseNameFromUrl = ltrim($parsedDatabaseUrl['path'], '/');
-    if ($databaseNameFromUrl === '') {
-        $databaseNameFromUrl = null;
+    $pathDatabaseName = ltrim($parsedDatabaseUrl['path'], '/');
+    if ($pathDatabaseName !== '') {
+        $databaseNameFromUrl = $pathDatabaseName;
     }
+}
+if ($databaseNameFromUrl === '') {
+    $databaseNameFromUrl = null;
 }
 
 define('APP_ENV', envValue('APP_ENV', 'local'));
@@ -95,7 +98,14 @@ define('DB_NAME', $databaseNameFromUrl ?: envValue('DB_NAME', 'arsy_delivery'));
 define('DB_USER', is_array($parsedDatabaseUrl) && array_key_exists('user', $parsedDatabaseUrl) ? $parsedDatabaseUrl['user'] : envValue('DB_USER', 'root'));
 define('DB_PASS', is_array($parsedDatabaseUrl) && array_key_exists('pass', $parsedDatabaseUrl) ? $parsedDatabaseUrl['pass'] : (getenv('DB_PASS') !== false ? getenv('DB_PASS') : ''));
 define('DB_CHARSET', $databaseQuery['charset'] ?? envValue('DB_CHARSET', 'utf8mb4'));
-define('DB_SSL_MODE', strtolower($databaseQuery['sslmode'] ?? envValue('DB_SSL_MODE', $isVercel ? 'require' : 'prefer')));
+$sslMode = strtolower((string) ($databaseQuery['sslmode'] ?? $databaseQuery['ssl_mode'] ?? $databaseQuery['ssl-mode'] ?? envValue('DB_SSL_MODE', $isVercel ? 'require' : 'prefer')));
+if ($sslMode === 'true' || $sslMode === '1') {
+    $sslMode = 'require';
+}
+if ($sslMode === 'false' || $sslMode === '0') {
+    $sslMode = 'disable';
+}
+define('DB_SSL_MODE', $sslMode);
 define('DB_SSL_CA', envValue('DB_SSL_CA', ''));
 define('DB_SSL_VERIFY_SERVER_CERT', envFlag('DB_SSL_VERIFY_SERVER_CERT', false));
 
@@ -151,32 +161,52 @@ function getDB(): PDO
         PDO::ATTR_EMULATE_PREPARES => false,
     ];
 
+    $attemptOptions = [];
     if (DB_SSL_MODE !== '' && DB_SSL_MODE !== 'disable') {
-        // Pour PDO MySQL, on utilise les attributs MYSQL_ATTR_SSL_* plutôt que le DSN
         if (defined('PDO::MYSQL_ATTR_SSL_CA') && $sslCaPath !== '' && file_exists($sslCaPath)) {
             $options[PDO::MYSQL_ATTR_SSL_CA] = $sslCaPath;
         }
-        
-        // Aiven nécessite souvent SSL, mais si on n'a pas le CA, on peut désactiver la vérification stricte
+
         if (defined('PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT')) {
             $options[PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT] = DB_SSL_VERIFY_SERVER_CERT;
         } else {
-            // Par défaut pour Aiven si non défini
             $options[PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT] = false;
+        }
+
+        $attemptOptions[] = $options;
+
+        $fallbackOptions = $options;
+        if (defined('PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT')) {
+            $fallbackOptions[PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT] = false;
+        }
+        if (isset($fallbackOptions[PDO::MYSQL_ATTR_SSL_CA])) {
+            unset($fallbackOptions[PDO::MYSQL_ATTR_SSL_CA]);
+        }
+        $attemptOptions[] = $fallbackOptions;
+    } else {
+        $attemptOptions[] = $options;
+    }
+
+    $lastException = null;
+    foreach ($attemptOptions as $attemptOption) {
+        try {
+            $pdo = new PDO($dsn, DB_USER, DB_PASS, $attemptOption);
+            $lastException = null;
+            break;
+        } catch (PDOException $exception) {
+            $lastException = $exception;
         }
     }
 
-    try {
-        $pdo = new PDO($dsn, DB_USER, DB_PASS, $options);
-    } catch (PDOException $exception) {
+    if ($pdo === null && $lastException !== null) {
         error_log(sprintf(
             'Database connection failed [%s:%s/%s]: %s',
             DB_HOST,
             DB_PORT,
             DB_NAME,
-            $exception->getMessage()
+            $lastException->getMessage()
         ));
-        throw $exception;
+        throw $lastException;
     }
 
     return $pdo;

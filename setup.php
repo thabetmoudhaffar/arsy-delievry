@@ -8,9 +8,26 @@ require_once __DIR__ . '/config/database.php';
 $messages = [];
 
 try {
-    $pdo = new PDO('mysql:host=' . DB_HOST . ';charset=' . DB_CHARSET, DB_USER, DB_PASS, [
-        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
-    ]);
+    $sslCaPath = function_exists('resolveDbSslCaPath') ? resolveDbSslCaPath(DB_SSL_CA) : '';
+    $connectionOptions = [
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+    ];
+
+    if (DB_SSL_MODE !== '' && DB_SSL_MODE !== 'disable') {
+        if (defined('PDO::MYSQL_ATTR_SSL_CA') && $sslCaPath !== '' && file_exists($sslCaPath)) {
+            $connectionOptions[PDO::MYSQL_ATTR_SSL_CA] = $sslCaPath;
+        }
+        if (defined('PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT')) {
+            $connectionOptions[PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT] = DB_SSL_VERIFY_SERVER_CERT;
+        } else {
+            $connectionOptions[PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT] = false;
+        }
+    }
+
+    $dsn = sprintf('mysql:host=%s;port=%s;charset=%s', DB_HOST, DB_PORT, DB_CHARSET);
+    $pdo = new PDO($dsn, DB_USER, DB_PASS, $connectionOptions);
+    $pdo->exec('CREATE DATABASE IF NOT EXISTS `' . str_replace('`', '``', DB_NAME) . '`');
+    $pdo->exec('USE `' . str_replace('`', '``', DB_NAME) . '`');
 
     $sql = file_get_contents(__DIR__ . '/database/schema.sql');
     $statements = array_filter(array_map('trim', explode(';', $sql)));
