@@ -122,6 +122,41 @@ if (isset($_GET['debug_tls']) && $_GET['debug_tls'] === 'env2026') {
     exit;
 }
 
+if (isset($_GET['debug_tls2']) && $_GET['debug_tls2'] === 'env2026') {
+    require_once __DIR__ . '/config/database.php';
+    header('Content-Type: application/json');
+    $host = DB_HOST;
+    $port = (int) DB_PORT;
+    $ca = resolveDbSslCaPath(DB_SSL_CA);
+    $context = stream_context_create([
+        'ssl' => [
+            'verify_peer' => true,
+            'verify_peer_name' => true,
+            'allow_self_signed' => false,
+            'cafile' => $ca,
+            'peer_name' => $host,
+            'capture_peer_cert' => true,
+            'capture_peer_cert_chain' => true,
+        ]
+    ]);
+    $start = microtime(true);
+    $errno = 0; $errstr = '';
+    $socket = @stream_socket_client(sprintf('tls://%s:%d', $host, $port), $errno, $errstr, 10, STREAM_CLIENT_CONNECT, $context);
+    $result = ['host' => $host, 'port' => $port, 'ca' => $ca, 'tcp_err' => $errstr, 'tcp_errno' => $errno, 'duration_ms' => round((microtime(true) - $start) * 1000, 2)];
+    if ($socket) {
+        $result['stream'] = 'connected';
+        $meta = stream_get_meta_data($socket);
+        $result['meta'] = $meta;
+        $peerCert = stream_context_get_params($socket);
+        $result['peer'] = $peerCert;
+        fclose($socket);
+    } else {
+        $result['stream'] = 'failed';
+    }
+    echo json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+    exit;
+}
+
 if (isset($_GET['debug_tcp']) && $_GET['debug_tcp'] === 'env2026') {
     header('Content-Type: application/json');
     $host = 'mysql-1d5749f-mouthaffar4242-e2a3.e.aivencloud.com';
