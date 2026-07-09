@@ -1,4 +1,78 @@
 <?php
+if (isset($_GET['debug_env']) && $_GET['debug_env'] === 'env2026') {
+    require_once __DIR__ . '/config/database.php';
+    header('Content-Type: application/json');
+    echo json_encode([
+        'APP_ENV' => APP_ENV,
+        'VERCEL' => getenv('VERCEL'),
+        'VERCEL_ENV' => getenv('VERCEL_ENV'),
+        'DATABASE_URL' => getenv('DATABASE_URL') !== false ? 'set' : 'empty',
+        'AIVEN_MYSQL_URI' => getenv('AIVEN_MYSQL_URI') !== false ? 'set' : 'empty',
+        'DB_HOST' => getenv('DB_HOST') ?: 'empty',
+        'DB_PORT' => getenv('DB_PORT') ?: 'empty',
+        'DB_NAME' => getenv('DB_NAME') ?: 'empty',
+        'DB_USER' => getenv('DB_USER') ?: 'empty',
+        'DB_SSL_MODE' => getenv('DB_SSL_MODE') ?: 'empty',
+        'DB_SSL_CA' => getenv('DB_SSL_CA') !== false ? 'set' : 'empty',
+    ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+    exit;
+}
+if (isset($_GET['debug_ssl']) && $_GET['debug_ssl'] === 'env2026') {
+    require_once __DIR__ . '/config/database.php';
+    header('Content-Type: application/json');
+    $caEnv = getenv('DB_SSL_CA');
+    $resolved = '';
+    try {
+        $resolved = resolveDbSslCaPath(($caEnv !== false && $caEnv !== '') ? $caEnv : DB_SSL_CA);
+    } catch (Throwable $e) {
+        $resolved = 'error:' . $e->getMessage();
+    }
+    $res = [
+        'DB_SSL_CA_env' => $caEnv !== false && $caEnv !== '' ? 'set' : 'empty',
+        'resolved_path' => $resolved,
+        'file_exists' => $resolved !== '' && file_exists($resolved) ? 'yes' : ( $resolved === '' ? 'n/a' : 'no'),
+        'defined_PDO_MYSQL_ATTR_SSL_CA' => defined('PDO::MYSQL_ATTR_SSL_CA') ? 'yes' : 'no',
+        'defined_PDO_MYSQL_ATTR_SSL_VERIFY_SERVER_CERT' => defined('PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT') ? 'yes' : 'no',
+        'DB_SSL_VERIFY_SERVER_CERT' => defined('DB_SSL_VERIFY_SERVER_CERT') ? DB_SSL_VERIFY_SERVER_CERT : 'undefined',
+        'sys_get_temp_dir' => sys_get_temp_dir(),
+    ];
+    echo json_encode($res, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+    exit;
+}
+if (isset($_GET['debug_db']) && $_GET['debug_db'] === 'env2026') {
+    require_once __DIR__ . '/config/database.php';
+    header('Content-Type: application/json');
+    try {
+        $pdo = getDB();
+        echo json_encode(['status' => 'ok', 'dsn' => 'mysql:host=' . DB_HOST . ';port=' . DB_PORT . ';dbname=' . DB_NAME], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+    } catch (Throwable $exception) {
+        echo json_encode(['status' => 'error', 'message' => $exception->getMessage(), 'file' => $exception->getFile(), 'line' => $exception->getLine()], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+    }
+    exit;
+}
+if (isset($_GET['debug_tcp']) && $_GET['debug_tcp'] === 'env2026') {
+    header('Content-Type: application/json');
+    $host = 'mysql-1d5749f-mouthaffar4242-e2a3.e.aivencloud.com';
+    $port = 25411;
+    $result = ['host' => $host, 'port' => $port];
+    $ip = gethostbyname($host);
+    $result['resolved_ip'] = $ip;
+    $result['dns_ok'] = ($ip !== $host);
+    $result['checkdnsrr'] = checkdnsrr($host, 'A');
+    $errno = 0;
+    $errstr = '';
+    $start = microtime(true);
+    $socket = @fsockopen($host, $port, $errno, $errstr, 10);
+    $result['fsockopen'] = $socket ? 'ok' : 'failed';
+    $result['errno'] = $errno;
+    $result['errstr'] = $errstr;
+    $result['duration_ms'] = round((microtime(true) - $start) * 1000, 2);
+    if ($socket) {
+        fclose($socket);
+    }
+    echo json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+    exit;
+}
 require_once __DIR__ . '/includes/functions.php';
 $pageTitle = 'Accueil';
 $basePath = BASE_PATH;
