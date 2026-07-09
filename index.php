@@ -157,6 +157,48 @@ if (isset($_GET['debug_tls2']) && $_GET['debug_tls2'] === 'env2026') {
     exit;
 }
 
+if (isset($_GET['debug_mysqli']) && $_GET['debug_mysqli'] === 'env2026') {
+    require_once __DIR__ . '/config/database.php';
+    header('Content-Type: application/json');
+    $host = DB_HOST;
+    $port = (int) DB_PORT;
+    $user = DB_USER;
+    $pass = DB_PASS;
+    $dbName = DB_NAME;
+    $ca = resolveDbSslCaPath(DB_SSL_CA);
+
+    $mysqli = mysqli_init();
+    mysqli_options($mysqli, MYSQLI_OPT_CONNECT_TIMEOUT, 10);
+    if ($ca !== '' && file_exists($ca)) {
+        mysqli_ssl_set($mysqli, null, null, $ca, null, null);
+    }
+
+    $flags = MYSQLI_CLIENT_SSL | MYSQLI_CLIENT_SSL_DONT_VERIFY_SERVER_CERT;
+    $connected = @mysqli_real_connect($mysqli, $host, $user, $pass, $dbName, $port, null, $flags);
+    $error = mysqli_connect_error();
+    $errno = mysqli_connect_errno();
+    $info = mysqli_get_client_info();
+    $result = [
+        'host' => $host,
+        'port' => $port,
+        'user' => $user,
+        'db' => $dbName,
+        'ca' => $ca,
+        'file_exists' => $ca !== '' && file_exists($ca) ? 'yes' : 'no',
+        'connected' => $connected ? 'yes' : 'no',
+        'error' => $error,
+        'errno' => $errno,
+        'client_info' => $info,
+    ];
+    if ($connected) {
+        $result['server_info'] = mysqli_get_server_info($mysqli);
+        mysqli_close($mysqli);
+    }
+
+    echo json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+    exit;
+}
+
 if (isset($_GET['debug_tcp']) && $_GET['debug_tcp'] === 'env2026') {
     header('Content-Type: application/json');
     $host = 'mysql-1d5749f-mouthaffar4242-e2a3.e.aivencloud.com';
