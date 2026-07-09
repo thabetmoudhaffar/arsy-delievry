@@ -98,6 +98,7 @@ if (isset($_GET['debug_db']) && $_GET['debug_db'] === 'env2026') {
     exit;
 }
 if (isset($_GET['debug_tls']) && $_GET['debug_tls'] === 'env2026') {
+    require_once __DIR__ . '/config/database.php';
     header('Content-Type: application/json');
     $host = DB_HOST;
     $port = (int) DB_PORT;
