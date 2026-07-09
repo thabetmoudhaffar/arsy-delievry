@@ -105,12 +105,37 @@ $defaultAppUrl = $isVercel ? 'https://' . envValue('VERCEL_URL', '') : 'http://l
 define('BASE_PATH', getenv('BASE_PATH') !== false ? getenv('BASE_PATH') : $defaultBasePath);
 define('APP_URL', envValue('APP_URL', $defaultAppUrl));
 
+function resolveDbSslCaPath(string $value): string
+{
+    if ($value === '') {
+        return '';
+    }
+
+    if (file_exists($value)) {
+        return $value;
+    }
+
+    $normalized = str_replace(["\\r\\n", "\\n", "\\r"], PHP_EOL, $value);
+    if (!str_contains($normalized, 'BEGIN CERTIFICATE')) {
+        return $value;
+    }
+
+    $certificatePath = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'arsy-db-ca-' . md5($normalized) . '.pem';
+    if (!file_exists($certificatePath)) {
+        file_put_contents($certificatePath, $normalized);
+    }
+
+    return $certificatePath;
+}
+
 function getDB(): PDO
 {
     static $pdo = null;
     if ($pdo !== null) {
         return $pdo;
     }
+
+    $sslCaPath = resolveDbSslCaPath(DB_SSL_CA);
 
     $dsn = sprintf(
         'mysql:host=%s;port=%s;dbname=%s;charset=%s',
@@ -122,8 +147,8 @@ function getDB(): PDO
 
     if (DB_SSL_MODE !== '' && DB_SSL_MODE !== 'disable') {
         $dsn .= ';sslmode=' . DB_SSL_MODE;
-        if (DB_SSL_CA !== '') {
-            $dsn .= ';sslrootcert=' . DB_SSL_CA;
+        if ($sslCaPath !== '' && file_exists($sslCaPath)) {
+            $dsn .= ';sslrootcert=' . $sslCaPath;
         }
     }
 
@@ -133,8 +158,8 @@ function getDB(): PDO
         PDO::ATTR_EMULATE_PREPARES => false,
     ];
 
-    if (defined('PDO::MYSQL_ATTR_SSL_CA') && DB_SSL_CA !== '') {
-        $options[PDO::MYSQL_ATTR_SSL_CA] = DB_SSL_CA;
+    if (defined('PDO::MYSQL_ATTR_SSL_CA') && $sslCaPath !== '' && file_exists($sslCaPath)) {
+        $options[PDO::MYSQL_ATTR_SSL_CA] = $sslCaPath;
     }
 
     if (defined('PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT')) {
